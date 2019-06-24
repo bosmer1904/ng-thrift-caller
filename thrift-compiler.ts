@@ -1,6 +1,7 @@
 import { TClientConstructor, TProtocolConstructor, TTransportConstructor, ConnectOptions } from 'thrift';
+import { HttpClient } from "@angular/common/http";
 
-export type createConnection = (host: string, port: number, options?: ConnectOptions) => any;
+export type createConnection = (httpClient: HttpClient ,host: string, port: number, options?: ConnectOptions) => any;
 export type createClient = (client, connection) => any;
 
 
@@ -26,7 +27,9 @@ export class ThriftCompiler {
   transport: TTransportConstructor;
   protocol: TProtocolConstructor;
   url: UrlOptions;
-  constructor(transport: TTransportConstructor, protocol: TProtocolConstructor, url: UrlOptions | string) {
+  httpClient: HttpClient;
+  constructor(httpClient: HttpClient, transport: TTransportConstructor, protocol: TProtocolConstructor, url: UrlOptions | string) {
+    this.httpClient = httpClient;
     if (typeof url === 'string') {
       this.url = parseUrlToUrlOptions(url);
     } else {
@@ -37,7 +40,7 @@ export class ThriftCompiler {
   }
 
   getFactory(connectionType: createConnection, clientType: createClient) : ClientFactory {
-    return new ClientFactory(this.transport, this.protocol, connectionType, clientType, this.url);
+    return new ClientFactory(this.httpClient, this.transport, this.protocol, connectionType, clientType, this.url);
   };
 }
 
@@ -48,9 +51,12 @@ export class ClientFactory {
   url: UrlOptions;
   createConnection: createConnection;
   createClient: createClient;
-  constructor(transport: TTransportConstructor, protocol: TProtocolConstructor, connectionType: createConnection,
+  httpClient: HttpClient;
+  constructor(httpClient: HttpClient,transport: TTransportConstructor, protocol: TProtocolConstructor, connectionType: createConnection,
               clientType: createClient, url: UrlOptions | string) {
-    
+    this.httpClient = httpClient;
+
+      
     if ( typeof url === 'string' ) {
       this.url = parseUrlToUrlOptions(url);
     } else {
@@ -63,7 +69,7 @@ export class ClientFactory {
   };
 
   getClient<TClient>(service: TClientConstructor<TClient>, path: string) : TClient {
-    let connection = this.createConnection(this.url.host, this.url.port, {
+    let connection = this.createConnection(this.httpClient, this.url.host, this.url.port, {
       transport: this.transport,
       protocol: this.protocol,
       https: this.url.https,

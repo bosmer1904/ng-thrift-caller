@@ -10,7 +10,8 @@ function parseUrlToUrlOptions(url) {
     };
 }
 var ThriftCompiler = /** @class */ (function () {
-    function ThriftCompiler(transport, protocol, url) {
+    function ThriftCompiler(httpClient, transport, protocol, url) {
+        this.httpClient = httpClient;
         if (typeof url === 'string') {
             this.url = parseUrlToUrlOptions(url);
         }
@@ -21,14 +22,15 @@ var ThriftCompiler = /** @class */ (function () {
         this.protocol = protocol;
     }
     ThriftCompiler.prototype.getFactory = function (connectionType, clientType) {
-        return new ClientFactory(this.transport, this.protocol, connectionType, clientType, this.url);
+        return new ClientFactory(this.httpClient, this.transport, this.protocol, connectionType, clientType, this.url);
     };
     ;
     return ThriftCompiler;
 }());
 exports.ThriftCompiler = ThriftCompiler;
 var ClientFactory = /** @class */ (function () {
-    function ClientFactory(transport, protocol, connectionType, clientType, url) {
+    function ClientFactory(httpClient, transport, protocol, connectionType, clientType, url) {
+        this.httpClient = httpClient;
         if (typeof url === 'string') {
             this.url = parseUrlToUrlOptions(url);
         }
@@ -42,7 +44,7 @@ var ClientFactory = /** @class */ (function () {
     }
     ;
     ClientFactory.prototype.getClient = function (service, path) {
-        var connection = this.createConnection(this.url.host, this.url.port, {
+        var connection = this.createConnection(this.httpClient, this.url.host, this.url.port, {
             transport: this.transport,
             protocol: this.protocol,
             https: this.url.https,
