@@ -30,7 +30,7 @@ export class ThriftService {
 
       if(this.before_request) this.before_request(this);
 
-      const callback = (err, res) => {
+      const callback = (err:any, res: T) => {
         if(this.callback) this.callback(err, res);
         if(err) observer.error(err);
         else if(res) observer.next(res);
@@ -39,8 +39,8 @@ export class ThriftService {
       };
       const query = client[method];
       
-      if(data) query(data, ...rest, callback);
-      else     query(callback);
+      if(data) query.call(query,data, ...rest, callback);
+      else     query.call(query,callback);
     });
   }
 }

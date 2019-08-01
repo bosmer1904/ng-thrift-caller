@@ -43,9 +43,9 @@ var ThriftService = /** @class */ (function () {
             };
             var query = client[method];
             if (data)
-                query.apply(void 0, [data].concat(rest, [callback]));
+                query.call.apply(query, [query, data].concat(rest, [callback]));
             else
-                query(callback);
+                query.call(query, callback);
         });
     };
     ThriftService = __decorate([
