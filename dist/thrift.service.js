@@ -22,36 +22,6 @@ var ThriftService = /** @class */ (function () {
     ThriftService.prototype.setCallback = function (callback) {
         this.callback = callback;
     };
-    // public call<T>(client, method: string, data?: Object, ...rest) {
-    //   return new Observable<T>(observer => {
-    //
-    //     if(this.before_request) this.before_request(this);
-    //
-    //     const callback = (err:any, res: T) => {
-    //       if(this.callback) this.callback(err, res);
-    //       if(err) observer.error(err);
-    //       else if(res) observer.next(res);
-    //       observer.complete();
-    //       return {unsubscribe() {}};
-    //     };
-    //     const query = client[method];
-    //
-    //     if(data) query.call(query,data, ...rest, (err:any, res: T) => {
-    //       if(this.callback) this.callback(err, res);
-    //       if(err) observer.error(err);
-    //       else if(res) observer.next(res);
-    //       observer.complete();
-    //       return {unsubscribe() {}};
-    //     });
-    //     else     query.call(query,(err:any, res: T) => {
-    //       if(this.callback) this.callback(err, res);
-    //       if(err) observer.error(err);
-    //       else if(res) observer.next(res);
-    //       observer.complete();
-    //       return {unsubscribe() {}};
-    //     });
-    //   });
-    // }
     ThriftService.prototype.call = function (client, method, data) {
         var _this = this;
         var rest = [];
