@@ -75,10 +75,32 @@ var ThriftService = /** @class */ (function () {
                 return { unsubscribe: function () { } };
             };
             if (data) {
-                query.apply(void 0, [data].concat(rest, [callback]));
+                query.apply(void 0, [data].concat(rest, [function (err, res) {
+                        if (_this.callback)
+                            _this.callback(err, res);
+                        if (err) {
+                            observer.error(err);
+                        }
+                        else if (res) {
+                            observer.next(res);
+                        }
+                        observer.complete();
+                        return { unsubscribe: function () { } };
+                    }]));
             }
             else {
-                query(callback);
+                query(function (err, res) {
+                    if (_this.callback)
+                        _this.callback(err, res);
+                    if (err) {
+                        observer.error(err);
+                    }
+                    else if (res) {
+                        observer.next(res);
+                    }
+                    observer.complete();
+                    return { unsubscribe: function () { } };
+                });
             }
         });
     };

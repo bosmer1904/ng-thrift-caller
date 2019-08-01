@@ -70,9 +70,27 @@ export class ThriftService {
         return {unsubscribe() {}};
       };
       if(data) {
-        query(data, ...rest, callback)
+        query(data, ...rest, (err, res) => {
+          if (this.callback) this.callback(err, res);
+          if (err) {
+            observer.error(err);
+          } else if(res) {
+            observer.next(res);
+          }
+          observer.complete();
+          return {unsubscribe() {}};
+        })
       } else {
-        query(callback)
+        query((err, res) => {
+          if (this.callback) this.callback(err, res);
+          if (err) {
+            observer.error(err);
+          } else if(res) {
+            observer.next(res);
+          }
+          observer.complete();
+          return {unsubscribe() {}};
+        })
       }
     })
   }
