@@ -55,11 +55,12 @@ export class ThriftService {
   //     });
   //   });
   // }
-  public call(client, method: string, data?: Object, ...rest) {
-    return new Observable<any>((observer) => {
-      if(this.before_request) this.before_request(this);
-      const callback = (err, res) => {
-        this.callback && this.callback(err, res);
+  public call<T>(client, method: string, data?: Object, ...rest) {
+    return new Observable<T>((observer) => {
+      if(this.before_request) { this.before_request(this); }
+
+      const callback = (err: any, res: T) => {
+        if(this.callback) { this.callback(err, res); }
         if (err) {
           observer.error(err);
         } else if(res) {
@@ -68,6 +69,7 @@ export class ThriftService {
         observer.complete();
         return {unsubscribe() {}};
       };
+
       if(data) {
         client[method](data, ...rest, callback)
       } else {

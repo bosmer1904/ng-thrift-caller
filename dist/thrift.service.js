@@ -59,10 +59,13 @@ var ThriftService = /** @class */ (function () {
             rest[_i - 3] = arguments[_i];
         }
         return new rxjs_1.Observable(function (observer) {
-            if (_this.before_request)
+            if (_this.before_request) {
                 _this.before_request(_this);
+            }
             var callback = function (err, res) {
-                _this.callback && _this.callback(err, res);
+                if (_this.callback) {
+                    _this.callback(err, res);
+                }
                 if (err) {
                     observer.error(err);
                 }
