@@ -61,23 +61,9 @@ var ThriftService = /** @class */ (function () {
         return new rxjs_1.Observable(function (observer) {
             if (_this.before_request)
                 _this.before_request(_this);
-            var query = client[method];
-            var callback = function (err, res) {
-                if (_this.callback)
-                    _this.callback(err, res);
-                if (err) {
-                    observer.error(err);
-                }
-                else if (res) {
-                    observer.next(res);
-                }
-                observer.complete();
-                return { unsubscribe: function () { } };
-            };
             if (data) {
-                query.apply(void 0, [data].concat(rest, [function (err, res) {
-                        if (_this.callback)
-                            _this.callback(err, res);
+                client[method].apply(client, [data].concat(rest, [function (err, res) {
+                        _this.callback && _this.callback(err, res);
                         if (err) {
                             observer.error(err);
                         }
@@ -89,9 +75,8 @@ var ThriftService = /** @class */ (function () {
                     }]));
             }
             else {
-                query(function (err, res) {
-                    if (_this.callback)
-                        _this.callback(err, res);
+                client[method](function (err, res) {
+                    _this.callback && _this.callback(err, res);
                     if (err) {
                         observer.error(err);
                     }
