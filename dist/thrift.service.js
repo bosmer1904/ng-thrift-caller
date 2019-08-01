@@ -43,7 +43,7 @@ var ThriftService = /** @class */ (function () {
             };
             var query = client[method];
             if (data)
-                query(data, callback);
+                query.apply(void 0, [data].concat(rest, [callback]));
             else
                 query(callback);
         });

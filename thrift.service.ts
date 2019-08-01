@@ -39,7 +39,7 @@ export class ThriftService {
       };
       const query = client[method];
       
-      if(data) query(data, callback);
+      if(data) query(data, ...rest, callback);
       else     query(callback);
     });
   }
