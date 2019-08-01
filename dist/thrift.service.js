@@ -43,9 +43,27 @@ var ThriftService = /** @class */ (function () {
             };
             var query = client[method];
             if (data)
-                query.call.apply(query, [query, data].concat(rest, [callback]));
+                query.call.apply(query, [query, data].concat(rest, [function (err, res) {
+                        if (_this.callback)
+                            _this.callback(err, res);
+                        if (err)
+                            observer.error(err);
+                        else if (res)
+                            observer.next(res);
+                        observer.complete();
+                        return { unsubscribe: function () { } };
+                    }]));
             else
-                query.call(query, callback);
+                query.call(query, function (err, res) {
+                    if (_this.callback)
+                        _this.callback(err, res);
+                    if (err)
+                        observer.error(err);
+                    else if (res)
+                        observer.next(res);
+                    observer.complete();
+                    return { unsubscribe: function () { } };
+                });
         });
     };
     ThriftService = __decorate([
