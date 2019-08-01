@@ -22,6 +22,36 @@ var ThriftService = /** @class */ (function () {
     ThriftService.prototype.setCallback = function (callback) {
         this.callback = callback;
     };
+    // public call<T>(client, method: string, data?: Object, ...rest) {
+    //   return new Observable<T>(observer => {
+    //
+    //     if(this.before_request) this.before_request(this);
+    //
+    //     const callback = (err:any, res: T) => {
+    //       if(this.callback) this.callback(err, res);
+    //       if(err) observer.error(err);
+    //       else if(res) observer.next(res);
+    //       observer.complete();
+    //       return {unsubscribe() {}};
+    //     };
+    //     const query = client[method];
+    //
+    //     if(data) query.call(query,data, ...rest, (err:any, res: T) => {
+    //       if(this.callback) this.callback(err, res);
+    //       if(err) observer.error(err);
+    //       else if(res) observer.next(res);
+    //       observer.complete();
+    //       return {unsubscribe() {}};
+    //     });
+    //     else     query.call(query,(err:any, res: T) => {
+    //       if(this.callback) this.callback(err, res);
+    //       if(err) observer.error(err);
+    //       else if(res) observer.next(res);
+    //       observer.complete();
+    //       return {unsubscribe() {}};
+    //     });
+    //   });
+    // }
     ThriftService.prototype.call = function (client, method, data) {
         var _this = this;
         var rest = [];
@@ -31,39 +61,25 @@ var ThriftService = /** @class */ (function () {
         return new rxjs_1.Observable(function (observer) {
             if (_this.before_request)
                 _this.before_request(_this);
+            var query = client[method];
             var callback = function (err, res) {
                 if (_this.callback)
                     _this.callback(err, res);
-                if (err)
+                if (err) {
                     observer.error(err);
-                else if (res)
+                }
+                else if (res) {
                     observer.next(res);
+                }
                 observer.complete();
                 return { unsubscribe: function () { } };
             };
-            var query = client[method];
-            if (data)
-                query.call.apply(query, [query, data].concat(rest, [function (err, res) {
-                        if (_this.callback)
-                            _this.callback(err, res);
-                        if (err)
-                            observer.error(err);
-                        else if (res)
-                            observer.next(res);
-                        observer.complete();
-                        return { unsubscribe: function () { } };
-                    }]));
-            else
-                query.call(query, function (err, res) {
-                    if (_this.callback)
-                        _this.callback(err, res);
-                    if (err)
-                        observer.error(err);
-                    else if (res)
-                        observer.next(res);
-                    observer.complete();
-                    return { unsubscribe: function () { } };
-                });
+            if (data) {
+                query.apply(void 0, [data].concat(rest, [callback]));
+            }
+            else {
+                query(callback);
+            }
         });
     };
     ThriftService = __decorate([

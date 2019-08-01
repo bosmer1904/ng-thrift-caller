@@ -7,5 +7,5 @@ export declare class ThriftService {
     protected before_request: (any?: any) => void;
     constructor(factory: ClientFactory, clients: any, callback?: (err: any, res: any) => void, before_request?: (any?: any) => void);
     setCallback(callback: (err: any, res: any) => void): void;
-    call<T>(client: any, method: string, data?: Object, ...rest: any[]): Observable<T>;
+    call(client: any, method: string, data?: Object, ...rest: any[]): Observable<any>;
 }
