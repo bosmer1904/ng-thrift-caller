@@ -25,32 +25,22 @@ export class ThriftService {
     this.callback = callback;
   }
 
-  public call(client, method: string, data?: Object, ...rest) {
-    return new Observable<any>((observer) => {
-      this.before_request && this.before_request(this);
-      if(data) {
-        client[method](data, ...rest, (err, res) => {
-          this.callback && this.callback(err, res);
-          if (err) {
-            observer.error(err);
-          } else if(res) {
-            observer.next(res);
-          }
-          observer.complete();
-          return {unsubscribe() {}};
-        })
-      } else {
-        client[method]((err, res) => {
-          this.callback && this.callback(err, res);
-          if (err) {
-            observer.error(err);
-          } else if(res) {
-            observer.next(res);
-          }
-          observer.complete();
-          return {unsubscribe() {}};
-        })
-      }
-    })
+  public call<T>(client, method: string, data?: Object, ...rest) {
+    return new Observable<T>(observer => {
+
+      if(this.before_request) this.before_request(this);
+
+      const callback = (err, res) => {
+        if(this.callback) this.callback(err, res);
+        if(err) observer.error(err);
+        else if(res) observer.next(res);
+        observer.complete();
+        return {unsubscribe() {}};
+      };
+      const query = client[method];
+      
+      if(data) query(data, callback);
+      else     query(callback);
+    });
   }
 }

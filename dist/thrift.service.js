@@ -29,33 +29,23 @@ var ThriftService = /** @class */ (function () {
             rest[_i - 3] = arguments[_i];
         }
         return new rxjs_1.Observable(function (observer) {
-            _this.before_request && _this.before_request(_this);
-            if (data) {
-                client[method].apply(client, [data].concat(rest, [function (err, res) {
-                        _this.callback && _this.callback(err, res);
-                        if (err) {
-                            observer.error(err);
-                        }
-                        else if (res) {
-                            observer.next(res);
-                        }
-                        observer.complete();
-                        return { unsubscribe: function () { } };
-                    }]));
-            }
-            else {
-                client[method](function (err, res) {
-                    _this.callback && _this.callback(err, res);
-                    if (err) {
-                        observer.error(err);
-                    }
-                    else if (res) {
-                        observer.next(res);
-                    }
-                    observer.complete();
-                    return { unsubscribe: function () { } };
-                });
-            }
+            if (_this.before_request)
+                _this.before_request(_this);
+            var callback = function (err, res) {
+                if (_this.callback)
+                    _this.callback(err, res);
+                if (err)
+                    observer.error(err);
+                else if (res)
+                    observer.next(res);
+                observer.complete();
+                return { unsubscribe: function () { } };
+            };
+            var query = client[method];
+            if (data)
+                query(data, callback);
+            else
+                query(callback);
         });
     };
     ThriftService = __decorate([
