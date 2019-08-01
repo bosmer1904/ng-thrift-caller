@@ -30,7 +30,21 @@ var ThriftService = /** @class */ (function () {
         }
         return new rxjs_1.Observable(function (observer) {
             _this.before_request && _this.before_request(_this);
-            client[method].apply(client, [data].concat(rest, [function (err, res) {
+            if (data) {
+                client[method].apply(client, [data].concat(rest, [function (err, res) {
+                        _this.callback && _this.callback(err, res);
+                        if (err) {
+                            observer.error(err);
+                        }
+                        else if (res) {
+                            observer.next(res);
+                        }
+                        observer.complete();
+                        return { unsubscribe: function () { } };
+                    }]));
+            }
+            else {
+                client[method](function (err, res) {
                     _this.callback && _this.callback(err, res);
                     if (err) {
                         observer.error(err);
@@ -40,7 +54,8 @@ var ThriftService = /** @class */ (function () {
                     }
                     observer.complete();
                     return { unsubscribe: function () { } };
-                }]));
+                });
+            }
         });
     };
     ThriftService = __decorate([
