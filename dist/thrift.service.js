@@ -32,24 +32,37 @@ var ThriftService = /** @class */ (function () {
             if (_this.before_request) {
                 _this.before_request(_this);
             }
-            var callback = function (err, res) {
+            // const callback = (err: any, res) => {
+            //   if(this.callback) { this.callback(err, res); }
+            //   if (err) {
+            //
+            //   } else if(res) {
+            //     observer.next(res);
+            //   }
+            //   observer.complete();
+            //   return {unsubscribe() {}};
+            // };
+            var success = function (res) {
                 if (_this.callback) {
-                    _this.callback(err, res);
+                    _this.callback(undefined, res);
                 }
-                if (err) {
-                    observer.error(err);
+                observer.next(res);
+            };
+            var failure = function (err) {
+                if (_this.callback) {
+                    _this.callback(err, undefined);
                 }
-                else if (res) {
-                    observer.next(res);
-                }
-                observer.complete();
-                return { unsubscribe: function () { } };
+                observer.error(err);
             };
             if (data) {
-                client[method].apply(client, [data].concat(rest, [callback]));
+                client[method].apply(client, [data].concat(rest)).then(success, failure).finally(function () {
+                    observer.complete();
+                });
             }
             else {
-                client[method](callback);
+                client[method]().then(success, failure).finally(function () {
+                    observer.complete();
+                });
             }
         });
     };
