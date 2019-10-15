@@ -32,16 +32,6 @@ var ThriftService = /** @class */ (function () {
             if (_this.before_request) {
                 _this.before_request(_this);
             }
-            // const callback = (err: any, res) => {
-            //   if(this.callback) { this.callback(err, res); }
-            //   if (err) {
-            //
-            //   } else if(res) {
-            //     observer.next(res);
-            //   }
-            //   observer.complete();
-            //   return {unsubscribe() {}};
-            // };
             var success = function (res) {
                 if (_this.callback) {
                     _this.callback(undefined, res);
