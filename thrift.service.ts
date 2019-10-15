@@ -25,24 +25,13 @@ export class ThriftService {
         this.callback = callback;
     }
 
-    public call(client, method: string, data?: Object, ...rest) {
-        return new Observable<any>((observer) => {
+    public call<T>(client, method: string, data?: Object, ...rest) {
+        return new Observable<T>((observer) => {
             if (this.before_request) {
                 this.before_request(this);
             }
 
-            // const callback = (err: any, res) => {
-            //   if(this.callback) { this.callback(err, res); }
-            //   if (err) {
-            //
-            //   } else if(res) {
-            //     observer.next(res);
-            //   }
-            //   observer.complete();
-            //   return {unsubscribe() {}};
-            // };
-
-            const success = (res) => {
+            const success = (res: T) => {
                 if (this.callback) {
                     this.callback(undefined, res);
                 }
