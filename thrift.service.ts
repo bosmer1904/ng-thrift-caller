@@ -25,7 +25,7 @@ export class ThriftService {
         this.callback = callback;
     }
 
-    public call<T>(client, method: string, data?: Object, ...rest) {
+    public call<T>(client, method: string, data?: Object, ...rest): Observable<T> {
         return new Observable<T>((observer) => {
             if (this.before_request) {
                 this.before_request(this);
